@@ -36,11 +36,13 @@ const useStyles = makeStyles({
   },
 });
 
-const InsuredsAdd = (props) => {
+const InsuredEdit = ({ setEditing, insured }) => {
+  const [insuredActual, setInsuredActual] = React.useState(insured);
+
   const initialFormState = {
     name: "",
     surname: "",
-    Dni: "",
+    dni: "",
     dateBirth: null,
     gender: "",
     adress: "",
@@ -48,27 +50,31 @@ const InsuredsAdd = (props) => {
     civilState: "",
     occupation: "",
   };
-  const [insured, setInsured] = React.useState(initialFormState);
 
   const handleInputChange = (event) => {
     console.log(event);
     const value = event.target.value;
     const name = event.target.name;
-    setInsured({ ...insured, [name]: value });
+    setInsuredActual({ ...insuredActual, [name]: value });
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!insured.name || !insured.surname) return;
-    props.addInsured(insured);
-    setInsured(initialFormState);
+    if (!insuredActual.name || !insuredActual.surname) return;
+    setEditing(insuredActual);
+    setInsuredActual(initialFormState);
   };
   const classes = useStyles();
 
   return (
     <React.Fragment>
-      <Title>Agregar Asegurados</Title>
-      <form className={classes.root} noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <Title>Editar Asegurado</Title>
+      <form
+        className={classes.root}
+        noValidate
+        autoComplete="off"
+        onSubmit={handleSubmit}
+      >
         <div>
           <TextField
             id="inputNameAddInsured"
@@ -88,7 +94,7 @@ const InsuredsAdd = (props) => {
             id="inputDNIAddInsured"
             className={classes.textField}
             label="DNI"
-            value={insured.Dni}
+            value={insured.dni}
             onChange={handleInputChange}
           />
         </div>
@@ -161,12 +167,25 @@ const InsuredsAdd = (props) => {
             onChange={handleInputChange}
           />
         </div>
-        <Button variant="contained" className={classes.button} color="primary" type="submit">
-          Agregar
+        <Button
+          variant="contained"
+          className={classes.button}
+          color="primary"
+          type="submit"
+        >
+          Cancelar
+        </Button>
+        <Button
+          variant="contained"
+          className={classes.button}
+          color="primary"
+          type="submit"
+        >
+          Editar
         </Button>
       </form>
     </React.Fragment>
   );
 };
 
-export default InsuredsAdd;
+export default InsuredEdit;

@@ -9,11 +9,9 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import Tooltip from "@material-ui/core/Tooltip";
-import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import Title from "./Title";
-import InsuredsData from "../services/Insureds-data";
-import InsuredsHeaders from "../services/Insureds-headers";
+import DialogInfo from "../components/DialogInfo";
 
 // styles
 const useStyles = makeStyles((theme) => ({
@@ -23,14 +21,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TableData() {
+export default function TableData({ data, title, headers, editData, deleteData }) {
   const classes = useStyles();
-  const headers = InsuredsHeaders();
-  const rows = InsuredsData();
 
   return (
     <React.Fragment>
-      <Title className={classes.title}>Asegurados</Title>
+      <Title className={classes.title}>{title}</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -41,30 +37,27 @@ export default function TableData() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {data.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.date}</TableCell>
+              <TableCell>{row.surname}</TableCell>
+              <TableCell>{row.dni}</TableCell>
+              <TableCell>{row.dateofBirth}</TableCell>
               <TableCell>
-                <Button
-                  variant="contained"
-                  size="small"
-                  color="primary"
-                  className={classes.button}
-                  startIcon={<VisibilityIcon />}
-                >
-                  Ver
-                </Button>
+                <DialogInfo
+                  title="Detalle"
+                  object={row}
+                  textButton="Ver"
+                  icon={<VisibilityIcon />}
+                />
                 <Tooltip title="Editar" placement="top">
-                  <IconButton aria-label="edit">
+                  <IconButton aria-label="edit" onClick={editData(row)}>
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
 
                 <Tooltip title="Eliminar" placement="top">
-                  <IconButton aria-label="delete">
+                  <IconButton aria-label="delete" onClick={deleteData(row)}>
                     <DeleteIcon />
                   </IconButton>
                 </Tooltip>

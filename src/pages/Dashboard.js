@@ -1,106 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import { adminListItems, superAdminListItems } from "../components/listItems";
-import InsuredsMain from "../components/Insureds/Insureds-main";
+import AdminListItems from "../components/AdminItems";
+import InsuredsMain from "../components/Insureds/InsuredMain";
+import VehiclesMain from "../components/Vehicles/VehiclesMain";
+import OperationsMain from "../components/Operations/OperationsMain";
+import PoliciesMain from "../components/Policies/PoliciesMain";
+import SuperAdminItems from "../components/SuperAdminItems";
+import BoxesMain from "../components/Boxes/BoxesMain";
+import SinistersMain from "../components/Sinisters/SinistersMain";
+import UsersMain from "../components/Users/UsersMain";
+import ReportsMain from "../components/Reports/ReportsMain";
+import InsurersMain from "../components/Insurers/InsurersMain";
+import OfficesMain from "../components/Offices/OfficesMain";
+import { useStyles } from "../pages/DashboardStyles";
 
-const drawerWidth = 240;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
-  },
-  toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
-    ...theme.mixins.toolbar,
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginRight: 36,
-  },
-  menuButtonHidden: {
-    display: "none",
-  },
-  title: {
-    flexGrow: 1,
-  },
-  drawerPaper: {
-    position: "relative",
-    whiteSpace: "nowrap",
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: "hidden",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(7),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
-    },
-  },
-  appBarSpacer: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-  },
-  fixedHeight: {
-    height: 240,
-  },
-}));
-
-export default function Dashboard() {
+export default function Dashboard({ match }) {
+  console.log("dashboard");
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -138,37 +67,48 @@ export default function Dashboard() {
             DB Seguros
           </Typography>
           <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton color="inherit">
             <AccountCircleIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>{adminListItems}</List>
-        <Divider />
-        <List>{superAdminListItems}</List>
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <InsuredsMain />
-      </main>
-     
+      <Router>
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          }}
+          open={open}
+        >
+          <div className={classes.toolbarIcon}>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          <AdminListItems match={match} />
+          <Divider />
+          <SuperAdminItems match={match} />
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+
+          <Switch>
+            <Route path={`${match.url}/insureds`} component={InsuredsMain} />
+            <Route path={`${match.url}/vehicles`} component={VehiclesMain} />
+            <Route
+              path={`${match.url}/operations`}
+              component={OperationsMain}
+            />
+            <Route path={`${match.url}/policies`} component={PoliciesMain} />
+            <Route path={`${match.url}/boxes`} component={BoxesMain} />
+            <Route path={`${match.url}/sinisters`} component={SinistersMain} />
+            <Route path={`${match.url}/reports`} component={ReportsMain} />
+            <Route path={`${match.url}/insurers`} component={InsurersMain} />
+            <Route path={`${match.url}/users`} component={UsersMain} />
+            <Route path={`${match.url}/offices`} component={OfficesMain} />
+          </Switch>
+        </main>
+      </Router>
     </div>
   );
 }
