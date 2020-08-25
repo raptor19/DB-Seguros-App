@@ -12,7 +12,7 @@ import { Formik, Form, Field } from "formik";
 import { LinearProgress } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
-import SubmitButton from "../components/SubmitButton";
+import SubmitButton from "../../components/SubmitButton";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,6 +40,7 @@ const formSchema = Yup.object().shape({
   email: Yup.string()
     .email("Ingrese un email valido ")
     .max(50, "Email demasiado largo")
+    .lowercase()
     .required("Debe ingresar un email"),
   password: Yup.string()
     .min(8, "La constraseña debe tener 8 caracteres")
@@ -47,10 +48,8 @@ const formSchema = Yup.object().shape({
 });
 
 const handleSubmit = (values, setSubmitting, resetForm) => {
-  setTimeout(() => {
-    setSubmitting(false);
-    alert(JSON.stringify(values, null, 2));
-  }, 500);
+  console.log(values)
+  setSubmitting(false);
   resetForm();
 };
 
@@ -82,7 +81,6 @@ export default function SignIn() {
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                autofocus
                 name="email"
                 type="email"
                 label="Email"
@@ -93,7 +91,6 @@ export default function SignIn() {
                 variant="outlined"
                 margin="normal"
                 fullWidth
-                autofocus
                 type="password"
                 label="Password"
                 name="password"
@@ -104,6 +101,7 @@ export default function SignIn() {
                 style={classes.submit}
                 disabled={isSubmitting}
                 color="primary"
+                textButton="Ingresar"
               />
               <Grid container>
                 <Grid item xs>

@@ -1,10 +1,6 @@
 import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, LinearProgress } from "@material-ui/core";
 import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import {
   KeyboardDatePicker,
@@ -12,169 +8,190 @@ import {
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import Title from "../Title";
+import { Formik, Form, Field } from "formik";
+import { TextField } from "formik-material-ui";
+import * as Yup from "yup";
+import { useStyles } from "../Insureds/InsuredAddStyles";
+import MySelect from "../MySelect";
 
-const useStyles = makeStyles({
-  depositContext: {
-    flex: 1,
-  },
-  formControl: {
-    marginTop: 0,
-    minWidth: 110,
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  selectEmpty: {
-    marginTop: 2,
-  },
-  textField: {
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  button: {
-    marginTop: 20,
-    marginBottom: 20,
-  },
+const numericRegex = /^[0-9]*$/;
+const letterscaseRegex = /^[A-Za-z]+$/i;
+
+//const minDate = new Date("1900-01-01");
+
+const initialForm = {
+  name: "",
+  surname: "",
+  dni: "",
+  dateBirth: null,
+  gender: "",
+  adress: "",
+  phone: "",
+  email: "",
+  civilState: "",
+  occupation: "",
+};
+
+const formSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(3, "El nombre debe tener minimo 3 letras")
+    .max(20, "El nombre debe tener maximo 20 letras")
+    .matches(letterscaseRegex, "Solo letras")
+    .required("Debe ingresar un nombre"),
+  surname: Yup.string()
+    .min(3, "El dni debe tener minimo 3 letras")
+    .max(20, "El dni debe tener maximo 20 letras")
+    .matches(letterscaseRegex, "Solo letra")
+    .required("Debe ingresar un apellido"),
+  dni: Yup.string()
+    .min(7, "El dni debe tener minimo 7 digitos")
+    .max(8, "El dni debe tener maximo 8 digitos")
+    .matches(numericRegex, "Solo numeros")
+    .required("Debe ingresar un dni"),
+  dateBirth: Yup.date()
+    //.min(minDate, "Solo fechas posteriores a 1900")
+    .required("Debe ingresar una fecha"),
+  gender: Yup.string()
+    .required("Debe seleccionar un sexo")
+    .oneOf(["Masculino", "Femenino", "Otro"], "Sexo invalido"),
+  adress: Yup.string()
+    .min(5, "La direccion debe tener minimo 5 caracteres")
+    .max(30, "La direccion debe tener maximo 30 caracteres")
+    .required("Debe ingresar una direccion"),
+  phone: Yup.string()
+    .min(3, "El telefono debe tener minimo 10 digitos")
+    .max(20, "El telefono debe tener maximo 12 digitos")
+    .matches(numericRegex, "Solo numeros")
+    .required("Debe ingresar un telefono"),
+  email: Yup.string()
+    .email("Debe ingresar un email valido")
+    .required("Debe ingresar un email"),
+  civilState: Yup.string()
+    .required("Debe seleccionar un estado civil")
+    .oneOf(["Soltero", "Casado","Viudo", "Otro"], "Estado civil invalido"),
+  occupation: Yup.string()
+    .min(5, "La ocupacion debe tener minimo 5 letras")
+    .max(20, "La ocupacion debe tener maximo 20 letras")
+    .matches(letterscaseRegex, "Solo letras")
+    .required("Debe ingresar una ocupacion"),
 });
 
 const InsuredsAdd = (props) => {
-  const initialFormState = {
-    name: "",
-    surname: "",
-    dni: "",
-    dateBirth: null,
-    gender: "",
-    adress: "",
-    phone: "",
-    civilState: "",
-    occupation: "",
-  };
-  const [insured, setInsured] = React.useState(initialFormState);
-
-  const handleInputChange = (event) => {
-    console.log(event);
-    const value = event.target.value;
-    const name = event.target.name;
-    setInsured({ ...insured, [name]: value });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (!insured.name || !insured.surname) return;
-    props.addInsured(insured);
-    setInsured(initialFormState);
+  const handleSubmit = (values, setSubmitting, resetForm) => {
+    setTimeout(() => {
+      setSubmitting(false);
+      alert(JSON.stringify(values, null, 2));
+    }, 500);
+    resetForm();
   };
   const classes = useStyles();
 
   return (
     <React.Fragment>
-      <Title>Agregar Asegurados</Title>
-      <form
-        className={classes.root}
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}
+      <Title>Crear Asegurado</Title>
+      <Formik
+        initialValues={initialForm}
+        validationSchema={formSchema}
+        onSubmit={(values, { setSubmitting, resetForm }) => {
+          handleSubmit(values, setSubmitting, resetForm);
+        }}
       >
-        <div>
-          <TextField
-            id="inputNameAddInsured"
-            className={classes.textField}
-            label="Nombre"
-            value={insured.name}
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="inputSurnameAddInsured"
-            className={classes.textField}
-            label="Apellido"
-            value={insured.surname}
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="inputDNIAddInsured"
-            className={classes.textField}
-            label="DNI"
-            value={insured.dni}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              className={classes.formControl}
-              disableToolbar
-              variant="inline"
-              format="dd/MM/yyyy"
-              margin="normal"
-              id="inputDateOfBirthAddInsured"
-              label="Fecha de Nacimiento"
-              value={insured.dateBirth}
-              onChange={handleInputChange}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
+        {({ submitForm, isSubmitting }) => (
+          <Form>
+            <Field
+              component={TextField}
+              name="name"
+              type="text"
+              label="Nombre"
+              className={classes.textField}
             />
-          </MuiPickersUtilsProvider>
+            <Field
+              component={TextField}
+              name="surname"
+              type="text"
+              label="Apellido"
+              className={classes.textField}
+            />
+            <Field
+              component={TextField}
+              name="dni"
+              type="text"
+              label="DNI"
+              className={classes.textField}
+            />
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                className={classes.formControl}
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                margin="normal"
+                id="inputDateOfBirthAddInsured"
+                label="Fecha de Nacimiento"
+                name="dateBirth"
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </MuiPickersUtilsProvider>
+            <FormControl className={classes.formControl}>
+              <MySelect label="Sexo" name="gender">
+                <MenuItem value="Masculino">Masculino</MenuItem>
+                <MenuItem value="Femenino">Femenino</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </MySelect>
+            </FormControl>
 
-          <FormControl className={classes.formControl}>
-            <InputLabel id="inputGenderAddInsured">Sexo</InputLabel>
-            <Select
-              labelId="inputGenderAddInsured"
-              id="inputInsuredGenderSelected"
-              value={insured.gender}
-              onChange={handleInputChange}
+            <Field
+              component={TextField}
+              name="adress"
+              type="text"
+              label="Direccion"
+              className={classes.textField}
+            />
+            <Field
+              component={TextField}
+              name="phone"
+              type="text"
+              label="Telefono"
+              className={classes.textField}
+            />
+            <Field
+              component={TextField}
+              name="email"
+              type="text"
+              label="Email"
+              className={classes.textField}
+            />
+
+            <FormControl className={classes.formControl}>
+              <MySelect label="Estado Civil" name="civilState">
+                <MenuItem value="Soltero">Soltero</MenuItem>
+                <MenuItem value="Casado">Casado</MenuItem>
+                <MenuItem value="Viudo">Viudo</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </MySelect>
+            </FormControl>
+            <Field
+              component={TextField}
+              name="occupation"
+              type="text"
+              label="Ocupacion"
+              className={classes.textField}
+            />
+            {isSubmitting && <LinearProgress />}
+            <br />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
             >
-              <MenuItem value="Masculino">Masculino</MenuItem>
-              <MenuItem value="Femenino">Femenino</MenuItem>
-              <MenuItem value="Otro">Otro</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            id="inputAdressAddInsured"
-            className={classes.textField}
-            label="Direccion"
-            value={insured.adress}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
-          <TextField
-            id="inputPhoneAddInsured"
-            className={classes.textField}
-            label="Telefono"
-            value={insured.phone}
-            onChange={handleInputChange}
-          />
-          <FormControl className={classes.formControl}>
-            <InputLabel id="inputCivilStateAddInsured">Estado Civil</InputLabel>
-            <Select
-              labelId="inputCivilStateAddInsured"
-              id="inputCivilStateAddInsured"
-              value={insured.civilState}
-              onChange={handleInputChange}
-            >
-              <MenuItem value="Soltero">Soltero</MenuItem>
-              <MenuItem value="Casado">Casado</MenuItem>
-              <MenuItem value="Viudo">Viudo</MenuItem>
-              <MenuItem value="Otro">Otro</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            id="inputOccupationAddInsured"
-            className={classes.textField}
-            label="Ocupacion"
-            value={insured.occupation}
-            onChange={handleInputChange}
-          />
-        </div>
-        <Button
-          variant="contained"
-          className={classes.button}
-          color="primary"
-          type="submit"
-        >
-          Agregar
-        </Button>
-      </form>
+              Crear
+            </Button>
+          </Form>
+        )}
+      </Formik>
     </React.Fragment>
   );
 };

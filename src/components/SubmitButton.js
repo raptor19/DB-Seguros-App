@@ -1,17 +1,17 @@
 import React from "react";
-import Button from '@material-ui/core/Button';
+import Button from "@material-ui/core/Button";
 
-const SubmitButton = (props) => {
+const SubmitButton = ({ color, style, disable, textButton }) => {
   return (
     <Button
       variant="contained"
-      color={props.color}
+      color={color}
       type="submit"
       fullWidth
-      className={props.style}
-      disabled={props.disable}
+      className={style}
+      disabled={disable}
     >
-      Submit
+      {textButton}
     </Button>
   );
 };

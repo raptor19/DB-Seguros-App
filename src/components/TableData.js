@@ -5,13 +5,13 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import Tooltip from "@material-ui/core/Tooltip";
+import Button from "@material-ui/core/Button";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import Title from "./Title";
 import DialogInfo from "../components/DialogInfo";
+import DialogConfirm from "./DialogConfirm";
 
 // styles
 const useStyles = makeStyles((theme) => ({
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TableData({ data, title, headers, editData, deleteData }) {
+export default function TableData({ data, title, headers, editData }) {
   const classes = useStyles();
 
   return (
@@ -50,17 +50,23 @@ export default function TableData({ data, title, headers, editData, deleteData }
                   textButton="Ver"
                   icon={<VisibilityIcon />}
                 />
-                <Tooltip title="Editar" placement="top">
-                  <IconButton aria-label="edit" onClick={editData(row)}>
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Eliminar" placement="top">
-                  <IconButton aria-label="delete" onClick={deleteData(row)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<EditIcon/>}
+                  size="small"
+                  onClick={() => editData(row)}
+                >
+                  Editar
+                </Button>
+                <DialogConfirm
+                  title="Confirmar accion"
+                  text="Realmente desea eliminar el asegurado?"
+                  object={row}
+                  textButton="Eliminar"
+                  icon={<DeleteIcon />}
+                  nameFunction="deleteInsured"
+                />
               </TableCell>
             </TableRow>
           ))}

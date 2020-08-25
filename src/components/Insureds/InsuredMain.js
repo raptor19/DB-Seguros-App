@@ -12,35 +12,37 @@ import InsuredsData from "../../services/Insureds-data";
 import InsuredHeaders from "../../services/Insureds-headers";
 import PubSub from "pubsub-js";
 import { useStyles } from "../Insureds/InsuredMainStyles";
+import FormExample from "../../pages/FormExample";
 
 const InsuredsMain = () => {
   const [insuredsSearched, setInsuredsSearched] = useState([]);
   const [insuredDelete, setInsuredDelete] = useState({});
   const [insuredHeaders, setInsuredsHeaders] = useState([]);
-  const [searchData, setSearchData] = useState({});
   const [editing, setEditing] = useState({});
 
   useEffect(() => {
+    console.log("InsuredMain");
     setInsuredsHeaders(InsuredHeaders());
     //Aca tengo que hacer la peticion para buscar el o los Asegurados de la busqueda
     PubSub.subscribe("search", (e, data) => {
-      setSearchData(data);
-      console.log(searchData);
+      //setInsuredSearched(searchInsureds(data));
     });
     PubSub.subscribe("deleteInsured", (e, data) => {
       setInsuredDelete(data);
-      console.log(insuredDelete);
+      deleteInsured(data);
     });
-    if (searchData != null) {
-      //setInsuredsSearched(searchInsureds());
-    }
+
     setInsuredsSearched(InsuredsData());
     return () => {
       PubSub.unsubscribe("search");
       PubSub.unsubscribe("deleteInsured");
     };
-  }, [insuredsSearched, searchData, insuredDelete, editing]);
+  }, [insuredsSearched, insuredDelete, editing]);
 
+  //Limpiar Busqueda
+  const clearSearching = () => {
+    setInsuredsSearched([]);
+  };
   // Agregar Asegurado
   const addInsured = (insured) => {
     alert(insured);
@@ -48,12 +50,12 @@ const InsuredsMain = () => {
 
   // Editar Asegurado
   const editInsured = (insured) => {
-    alert(insured.name);
+    console.log(insured);
   };
 
   // Eliminar Asegurado
-  const deleteInsured = (insured) => {
-    alert(insured.name);
+  const deleteInsured = (data) => {
+    console.log(data.id);
   };
 
   // Buscar Asegurados
@@ -78,7 +80,7 @@ const InsuredsMain = () => {
         {/* Buscar un Asegurado */}
         <Grid item xs={12} md={4} lg={4}>
           <Paper className={fixedHeightPaper}>
-            <InsuredsSearch />
+            <InsuredsSearch clearSearching={clearSearching} />
           </Paper>
         </Grid>
         {/* Agregar y modificar Asegurado */}
@@ -99,8 +101,12 @@ const InsuredsMain = () => {
               title="Resultado de Busqueda"
               data={insuredsSearched}
               editData={editInsured}
-              deleteData={deleteInsured}
             />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <FormExample />
           </Paper>
         </Grid>
       </Grid>

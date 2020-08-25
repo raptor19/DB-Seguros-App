@@ -1,47 +1,42 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, LinearProgress } from "@material-ui/core";
-import { Formik, Form, Field } from "formik";
+import Button from "@material-ui/core/Button";
 import { TextField } from "formik-material-ui";
-import * as Yup from "yup";
 import PubSub from "pubsub-js";
+import { LinearProgress } from "@material-ui/core";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 
 const useStyles = makeStyles({
   button: {
     marginLeft: 5,
     marginRight: 5,
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 5,
   },
 });
 
 const initialFormDni = { dni: "" };
 const initialFormSurname = { surname: "" };
-const numericRegex = /^[0-9]*$/;
-//const lowercaseRegex = /(?=.*[a-z])/;
-//const uppercaseRegex = /(?=.*[A-Z])/;
-const letterscaseRegex = /^[A-Za-z]+$/i;
-//const numericRegex = /(?=.*[0-9])/;
 
 const formSchemaDni = Yup.object().shape({
-  dni: Yup.string()
-    .min(7, "El dni debe tener minimo 7 digitos")
-    .max(8, "El dni debe tener maximo 8 digitos")
-    .matches(numericRegex, "Solo numeros")
+  search: Yup.string()
+    .min(7, "El dni debe tener almenos 7 digitos")
+    .max(9, "El dni debe tener maximo 9 digitos")
     .required("Debe ingresar un dni"),
 });
 
 const formSchemaSurname = Yup.object().shape({
   surname: Yup.string()
-    .min(3, "Apellido demasiado corto")
-    .max(20, "Apellido demasiado largo")
-    .matches(letterscaseRegex, "Solo texto")
-    .required("Debe ingresar un Apellido"),
+    .min(1, "apellido demasiado corto")
+    .max(15, "apellido demasiado largo")
+    .required("Debe ingresar un apellido"),
 });
 
-const SimpleSearch = ({ label, returnOptions }) => {
-  //const classes = useStyles();
+const SimpleSearchTwo = ({ label, returnOptions }) => {
+  console.log(label);
   const classes = useStyles();
+
   const handleSubmit = (values, setSubmitting, resetForm) => {
     console.log(values);
     PubSub.publish("search", { label: label, value: values });
@@ -61,23 +56,31 @@ const SimpleSearch = ({ label, returnOptions }) => {
           }}
         >
           {({ submitForm, isSubmitting }) => (
-            <Form>
-              <Field component={TextField} name="dni" type="text" label="DNI" />
+            <Form className={classes.form}>
+              <Field
+                component={TextField}
+                margin="normal"
+                fullWidth
+                name="dni"
+                type="text"
+                label="DNI"
+              />
+              <br />
               {isSubmitting && <LinearProgress />}
               <br />
               <Button
                 variant="contained"
                 color="primary"
-                className={classes.button}
                 onClick={returnOptions}
+                className={classes.button}
               >
                 Volver
               </Button>
               <Button
-                type="submit"
                 variant="contained"
-                className={classes.button}
                 color="primary"
+                type="submit"
+                className={classes.submit}
                 disabled={isSubmitting}
               >
                 Buscar
@@ -94,13 +97,16 @@ const SimpleSearch = ({ label, returnOptions }) => {
           }}
         >
           {({ submitForm, isSubmitting }) => (
-            <Form>
+            <Form className={classes.form}>
               <Field
                 component={TextField}
-                name="surname"
+                margin="normal"
+                fullWidth
+                name="apellido"
                 type="text"
                 label="Apellido"
               />
+              <br />
               {isSubmitting && <LinearProgress />}
               <br />
               <Button
@@ -113,10 +119,10 @@ const SimpleSearch = ({ label, returnOptions }) => {
               </Button>
               <Button
                 variant="contained"
-                type="submit"
                 color="primary"
+                type="submit"
+                className={classes.submit}
                 disabled={isSubmitting}
-                className={classes.button}
               >
                 Buscar
               </Button>
@@ -128,4 +134,4 @@ const SimpleSearch = ({ label, returnOptions }) => {
   );
 };
 
-export default SimpleSearch;
+export default SimpleSearchTwo;

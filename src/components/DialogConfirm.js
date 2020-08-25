@@ -7,7 +7,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import PubSub from "pubsub-js";
 
-const DialogMessage = ({ title, text, object, textButton, icon, action }) => {
+const DialogConfirm = ({ title, text, object, textButton, icon, nameFunction }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -19,7 +19,8 @@ const DialogMessage = ({ title, text, object, textButton, icon, action }) => {
   };
 
   const handleOption = () => {
-    PubSub.publish("deleteInsured", object  );
+    PubSub.publish(nameFunction, object);
+    setOpen(false);
   };
 
   return (
@@ -42,7 +43,7 @@ const DialogMessage = ({ title, text, object, textButton, icon, action }) => {
         <DialogTitle id="alert-dialog-slide-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            `${text} a ${object.name} ${object.surname} ?`
+            {text}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -50,7 +51,7 @@ const DialogMessage = ({ title, text, object, textButton, icon, action }) => {
             Cancelar
           </Button>
           <Button onClick={handleOption} color="primary" autoFocus>
-            Eliminar
+            Aceptar
           </Button>
         </DialogActions>
       </Dialog>
@@ -58,4 +59,4 @@ const DialogMessage = ({ title, text, object, textButton, icon, action }) => {
   );
 };
 
-export default DialogMessage;
+export default DialogConfirm;
